@@ -1,0 +1,46 @@
+#! python3
+
+# phoneAndEmail.py - Finds phone numbers and email addresses on the clipboard.
+
+
+import re, pyperclip
+
+# Create a regex for phone numbers
+
+phoneRegex = re.compile(r'''
+# +34 968 851246, +34 968851246, +34 968 85 12 46, +34 968 851 246, (34) ...
+
+(
+(\()?(\+)?(\))?(\d\d)?        # country code
+((\d\d\d\d\d\d\d\d\d)|(\d\d\d\s\d\d\d\d\d\d)|(\d\d\d\s\d\d\d\s\d\d\d)|(\d\d\d\s\d\d\s\d\d\s\d\d)|(\d\d\s\d\d\d\s\d\d\s\d\d))       # number phone
+)
+''', re.VERBOSE)
+
+
+# Create a regex for email addresses
+emailRegex = re.compile(r'''
+# some.+_thing@something.com
+
+[a-zA-Z0-9_.+]+        # name part
+@                      # @ symbol
+[a-zA-Z0-9_.+]+        # domain part
+
+''', re.VERBOSE)
+
+
+# Get the text off the clipboard
+text = pyperclip.paste()
+
+
+# Extract the email/phone from this text
+extractedPhone = phoneRegex.findall(text)
+extractedEmail = emailRegex.findall(text)
+
+allPhoneNumbers = []
+for phoneNumber in extractedPhone:
+    allPhoneNumbers.append(phoneNumber[0])
+
+
+# Copy the extractec email/phone to the clipboard
+results = '\n'.join(allPhoneNumbers) + '\n' + '\n'.join(extractedEmail)
+pyperclip.copy(results)
